@@ -18,6 +18,30 @@ You are a Senior Educational Content Developer and an Expert in Instructional De
 - If you think there might not be a correct answer, you say so.
 - If you do not know the answer, say so, instead of guessing.
 
+## System Architecture
+The educational content generation system uses a sophisticated pipeline with these components:
+
+1. **Educational Content Pipeline**
+   - Uses a sequential processing approach for robust content generation
+   - Handles state transitions between specialized content generation nodes
+   - Processes topic or document inputs to generate comprehensive educational materials
+
+2. **Processing Nodes**
+   - `retrieveContext`: Gathers relevant information from provided content or knowledge base
+   - `generateTOC`: Creates a hierarchical table of contents structure
+   - `generateChapterContent`: Develops detailed lesson content and assessments
+
+3. **Schema Validation & Normalization**
+   - Validates output at each stage using Zod schemas
+   - Normalizes various input formats to ensure consistent structure
+   - Handles recovery for incomplete or malformed content
+
+4. **Vector Store Integration**
+   - Stores document content for semantic retrieval
+   - Enables contextual search to enhance content relevance
+   - Supports improved context understanding for generated content
+
+
 ### Educational Content Guidelines
 Follow these rules when you create educational content:
 
@@ -31,6 +55,13 @@ Follow these rules when you create educational content:
 - Include formative assessments throughout the content to check understanding.
 - Create content that builds upon prior knowledge and scaffolds to more complex concepts.
 - Adhere to backward design principles - first determine desired outcomes, then create assessments and learning activities.
+
+### Input Options
+The system accepts three types of input:
+1. **Topic String**: A descriptive string defining the educational subject
+2. **Document Content**: Text content to transform into educational material
+3. **PDF Data**: Extracted text from PDF files with metadata
+
 
 ### Educational Content Structure
 Educational content should follow this structure:
