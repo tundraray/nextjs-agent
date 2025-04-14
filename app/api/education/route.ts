@@ -44,6 +44,14 @@ export async function POST(req: NextRequest) {
     const payload = await req.json();
     const validatedPayload = PayloadSchema.parse(payload);
 
+    // Debug - use a simple topic for testing
+    const debugMode = req.headers.get('x-debug-mode') === 'true';
+    if (debugMode) {
+      // Override payload for debugging
+      validatedPayload.topic = "Test Topic";
+      validatedPayload.pdfFileInfo = undefined;
+    }
+
     // Set content source based on input
     let contentSource = "";
     let contentType = "";
@@ -112,10 +120,20 @@ export async function POST(req: NextRequest) {
     const initialMemory: Record<string, any> = {};
     
     try {
+      const context = contentType === "topic" ? [] : [{
+        pageContent: contentSource,
+        metadata: documentReference ? {
+          documentId: documentReference.documentId,
+          documentName: documentReference.name,
+          documentUrl: documentReference.storageUrl 
+        } : { source: "direct input" }
+      }];
+
+
       const result = await graph.invoke({
         topic: contentType === "topic" ? contentSource : 
           validatedPayload.pdfFileInfo?.name || "Document analysis",
-        context: [],
+        context,
         memory: initialMemory,
         history: initialHistory
       });
@@ -194,6 +212,18 @@ export async function POST(req: NextRequest) {
       }
     } catch (error: any) {
       console.error("Error executing education graph:", error);
+      if (error.stack) {
+        console.error("Error stack trace:", error.stack);
+      }
+      
+      // Check for template errors
+      if (error.message && error.message.includes("template")) {
+        return NextResponse.json(
+          { error: "Template error in prompt: " + error.message },
+          { status: 500 }
+        );
+      }
+      
       return NextResponse.json(
         { error: error.message || "Failed to execute education graph" },
         { status: 500 }

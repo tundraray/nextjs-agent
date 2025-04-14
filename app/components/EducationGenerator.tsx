@@ -15,16 +15,23 @@ interface Lesson {
   quiz: QuizQuestion[];
 }
 
-interface SubTopic {
+interface Chapter {
   title: string;
   description: string;
   lessons: Lesson[];
+}
+
+interface SubTopic {
+  title: string;
+  description: string;
+  chapters: Chapter[];
 }
 
 interface EducationContent {
   mainTopic: string;
   description: string;
   subTopics: SubTopic[];
+  metadata?: any;
 }
 
 interface PDFFileInfo {
@@ -257,39 +264,46 @@ export default function EducationGenerator() {
             <p className="text-gray-600">{generatedContent.description}</p>
           </div>
 
-          {generatedContent.subTopics.map((subTopic, index) => (
+          {generatedContent.subTopics && generatedContent.subTopics.map((subTopic, index) => (
             <div key={index} className="border rounded p-4">
               <h3 className="text-lg font-bold mb-2">{subTopic.title}</h3>
               <p className="text-gray-600 mb-4">{subTopic.description}</p>
               
               <div className="space-y-4">
-                {subTopic.lessons.map((lesson, lessonIndex) => (
-                  <div key={lessonIndex} className="border-l-4 border-blue-500 pl-4">
-                    <h4 className="font-bold mb-2">{lesson.title}</h4>
-                    <p className="mb-4 whitespace-pre-line">{lesson.content}</p>
+                {subTopic.chapters && subTopic.chapters.map((chapter, chapterIndex) => (
+                  <div key={chapterIndex} className="border-l-4 border-blue-500 pl-4 mb-4">
+                    <h4 className="font-bold mb-2">{chapter.title}</h4>
+                    <p className="mb-4 whitespace-pre-line">{chapter.description}</p>
                     
-                    {lesson.quiz.length > 0 && (
-                      <div className="bg-gray-50 p-4 rounded">
-                        <h5 className="font-bold mb-2">Quiz</h5>
-                        {lesson.quiz.map((question, qIndex) => (
-                          <div key={qIndex} className="mb-4">
-                            <p className="font-medium mb-2">{question.question}</p>
-                            <div className="space-y-2">
-                              {question.options.map((option, oIndex) => (
-                                <label key={oIndex} className="flex items-center gap-2">
-                                  <input
-                                    type="radio"
-                                    name={`quiz-${lessonIndex}-${qIndex}`}
-                                    value={oIndex}
-                                  />
-                                  {option}
-                                </label>
-                              ))}
-                            </div>
+                    {chapter.lessons && chapter.lessons.map((lesson, lessonIndex) => (
+                      <div key={lessonIndex} className="border-l-4 border-blue-500 pl-4 mb-4">
+                        <h5 className="font-bold mb-2">{lesson.title}</h5>
+                        <p className="mb-4 whitespace-pre-line">{lesson.content}</p>
+                        
+                        {lesson.quiz && lesson.quiz.length > 0 && (
+                          <div className="bg-gray-50 p-4 rounded">
+                            <h6 className="font-bold mb-2">Quiz</h6>
+                            {lesson.quiz.map((question, qIndex) => (
+                              <div key={qIndex} className="mb-4">
+                                <p className="font-medium mb-2">{question.question}</p>
+                                <div className="space-y-2">
+                                  {question.options && question.options.map((option, oIndex) => (
+                                    <label key={oIndex} className="flex items-center gap-2">
+                                      <input
+                                        type="radio"
+                                        name={`quiz-${index}-${chapterIndex}-${lessonIndex}-${qIndex}`}
+                                        value={oIndex}
+                                      />
+                                      {option}
+                                    </label>
+                                  ))}
+                                </div>
+                              </div>
+                            ))}
                           </div>
-                        ))}
+                        )}
                       </div>
-                    )}
+                    ))}
                   </div>
                 ))}
               </div>

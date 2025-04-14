@@ -1,4 +1,4 @@
-import EducationGenerator from "../../components/EducationGenerator";
+import EducationGenerator from "../components/EducationGenerator";
 
 export const metadata = {
   title: 'Education Content Generator',
