@@ -21,6 +21,7 @@ CREATE TABLE IF NOT EXISTS education_content (
   document_name TEXT,
   document_url TEXT,
   content JSONB NOT NULL,
+  session_id UUID,
   created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
   updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
   FOREIGN KEY (document_id) REFERENCES document_metadata(id) ON DELETE SET NULL

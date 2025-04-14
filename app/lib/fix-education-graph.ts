@@ -112,7 +112,7 @@ const AlternativeLessonContentSchema = z.object({
 // Initialize OpenAI chat model
 const model = new ChatOpenAI({
   modelName: "gpt-4o",
-  temperature: 0.7,
+  temperature: 0.4,
 });
 
 // State interface - исправим на более гибкий тип

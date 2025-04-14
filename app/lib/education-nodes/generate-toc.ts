@@ -9,8 +9,8 @@ import { TocSchema, AlternativeTocSchema } from "../schemas/education-graph";
 
 // Initialize OpenAI chat model
 const model = new ChatOpenAI({
-  modelName: "gpt-4o",
-  temperature: 0.7,
+  modelName: "gpt-4o-mini",
+  temperature: 0.6,
 });
 
 // Initialize SupabaseVectorStoreMemory

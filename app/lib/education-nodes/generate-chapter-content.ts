@@ -11,7 +11,7 @@ import { searchVectorStore } from "../vector-store";
 // Initialize OpenAI chat model
 const model = new ChatOpenAI({
   modelName: "gpt-4o",
-  temperature: 0.7,
+  temperature: 0.3,
 });
 
 // Initialize memory
@@ -70,6 +70,12 @@ const lessonContentJsonSchema = {
 
 /**
  * Node function to generate content for each chapter
+ * 
+ * This implementation processes subtopics in parallel for improved performance.
+ * By parallelizing at the subtopic level but keeping chapter processing sequential within each subtopic,
+ * we achieve better throughput while avoiding potential rate limits from the LLM API.
+ * 
+ * This approach can significantly reduce the total processing time for courses with multiple subtopics.
  */
 export async function generateChapterContent(state: EducationState): Promise<EducationState> {
   console.log("Starting chapter content generation with state keys:", Object.keys(state));
@@ -129,16 +135,20 @@ export async function generateChapterContent(state: EducationState): Promise<Edu
   
   console.log(`TOC contains ${state.toc.subTopics.length} subtopics`);
 
-  // Process each subtopic
-  for (const subtopic of state.toc.subTopics) {
+  // Process each subtopic in parallel
+  const subtopicPromises = state.toc.subTopics.map(async (subtopic: any) => {
     console.log(`Processing subtopic: ${subtopic.title} with ${subtopic.chapters.length} chapters`);
-    const processedSubtopic = {
+    const processedSubtopic: {
+      title: string;
+      description: string;
+      chapters: any[];
+    } = {
       title: subtopic.title,
       description: subtopic.description,
       chapters: [],
     };
 
-    // Process each chapter in the subtopic
+    // Process each chapter in the subtopic (keep chapters sequential to avoid rate limiting)
     for (const chapter of subtopic.chapters) {
       // Check memory if we've already processed this chapter
       const memoryKey = `${subtopic.title}-${chapter.title}`;
@@ -339,25 +349,22 @@ export async function generateChapterContent(state: EducationState): Promise<Edu
           { output: JSON.stringify(processedChapter) }
         );
 
-        // Update history
-        state = {
-          ...state,
-          history: [
-            ...(state.history || []),
-            new HumanMessage(`Generate content for chapter ${chapter.title}`),
-            new AIMessage(JSON.stringify({ title: chapter.title })),
-          ],
-        };
+        // Note: We don't update the global state history here as we're running in parallel
       }
 
       processedSubtopic.chapters.push(processedChapter);
     }
-
-    fullContent.subTopics.push(processedSubtopic);
     
     // Logging after processing each subtopic
     console.log(`Completed processing subtopic: ${subtopic.title}`);
-  }
+    return processedSubtopic;
+  });
+
+  // Wait for all subtopics to be processed in parallel
+  const processedSubtopics = await Promise.all(subtopicPromises);
+  
+  // Add the processed subtopics to the full content
+  fullContent.subTopics = processedSubtopics;
 
   // Return updated state
   console.log("Content generation complete. Generated content:", JSON.stringify({
@@ -370,5 +377,14 @@ export async function generateChapterContent(state: EducationState): Promise<Edu
   return {
     ...state,
     generatedContent: fullContent,
+    // We need to update the history once at the end
+    history: [
+      ...(state.history || []),
+      new HumanMessage(`Generated content for ${processedSubtopics.length} subtopics`),
+      new AIMessage(JSON.stringify({ 
+        status: "success", 
+        subtopicsCount: processedSubtopics.length 
+      })),
+    ],
   };
 } 
