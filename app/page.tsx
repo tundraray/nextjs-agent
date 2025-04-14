@@ -1,5 +1,6 @@
 import { ChatWindow } from "@/components/ChatWindow";
 import { GuideInfoBox } from "@/components/guide/GuideInfoBox";
+import Link from "next/link";
 
 export default function AgentsPage() {
   const InfoCard = (
@@ -29,6 +30,16 @@ export default function AgentsPage() {
             The agent has access to a vector store retriever as a tool as well
             as a memory. It&apos;s particularly well suited to meta-questions
             about the current conversation.
+          </span>
+        </li>
+        <li className="text-l">
+          📚
+          <span className="ml-2">
+            Check out our{" "}
+            <Link href="/education" className="text-blue-500 hover:underline">
+              Education Content Generator
+            </Link>{" "}
+            to create courses and quizzes from any topic!
           </span>
         </li>
         <li className="hidden text-l md:block">
