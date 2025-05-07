@@ -139,10 +139,20 @@ export default function EducationGenerator() {
     try {
       console.log('Sending request to /api/education with topic:', topic);
       
-      const payload = {
-        topic,
-        pdfFileInfo: pdfFileInfo
+      // Create a payload with proper null handling
+      const payload: {
+        topic: string;
+        pdfFileInfo?: PDFFileInfo | null;
+      } = {
+        topic: topic.trim()
       };
+      
+      // Only include pdfFileInfo if it exists and is not null
+      if (pdfFileInfo) {
+        payload.pdfFileInfo = pdfFileInfo;
+      }
+      
+      console.log('Request payload:', payload);
       
       const response = await fetch('/api/education', {
         method: 'POST',

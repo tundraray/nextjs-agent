@@ -7,11 +7,28 @@ export const QuizQuestionSchema = z.object({
   correctAnswer: z.number(),
 });
 
-export const MemoryCardSchema = z.object({
-  title: z.string(),
-  description: z.string(),
-  situation: z.string().optional(),
-  response: z.string().optional(),
+// More flexible memory card schema - allows either direct string values or objects with properties
+export const MemoryCardSchema = z.union([
+  // Full object form with title and description
+  z.object({
+    title: z.string(),
+    description: z.string(),
+    situation: z.string().optional(),
+    response: z.string().optional(),
+  }),
+  // Simplified object form with just content
+  z.object({
+    content: z.string(),
+  })
+]).transform(card => {
+  // Normalize the card structure
+  if ('content' in card) {
+    return {
+      title: 'Content',
+      description: card.content
+    };
+  }
+  return card;
 });
 
 export const OpenEndedQuestionSchema = z.object({
