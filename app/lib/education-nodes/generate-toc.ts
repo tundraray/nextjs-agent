@@ -87,12 +87,80 @@ export async function generateTOC(state: EducationState): Promise<EducationState
   const tocPrompt = ChatPromptTemplate.fromMessages([
     {
       role: "system",
-      content: `You are an expert educator tasked with creating a comprehensive and hierarchical educational course structure. 
-      Given the topic or document, create a well-structured hierarchical table of contents with:
-      1. Main topic with description
-      2. 3-5 major subtopics with descriptions
-      3. 2-4 chapters per subtopic with descriptions
-      4. 3-5 lesson titles per chapter
+      content: `🎓 Instructional Design Prompt: Generate Course Structure
+
+You are an Instructional Designer and Curriculum Architect.
+Your task is to analyze the provided document (PDF extraction or raw text) and generate a well-structured, pedagogically sound course structure. You must apply instructional design principles such as Backward Design, Scaffolding, and Outcome-Oriented Sequencing.
+Your output must be a clean Table of Contents (TOC) structured as follows:
+
+📘 1. Course Title + Course Overview
+ • Title: A clear, learner-facing course name
+ • Overview: A short learner-friendly paragraph that explains what this course is about, what the learner will gain, and how it will help them. Use motivational, modern language.
+
+🟨 2. Intro Section (always required)
+This section includes 1 lesson that introduces the learner to the course goals and structure.
+ • Section title: "Welcome to the Course" (or similar)
+ • Lesson title: "What This Course Is About"
+This lesson must briefly explain:
+ • The topic
+ • Key value for the learner
+ • Who it is for
+ • What will be covered
+
+📗 3. Core Course Sections
+Each core section = 1 chapter/module, consisting of 3–6 lessons, followed by 1 Quiz lesson.
+Each section must include:
+ • Section (chapter) title
+ • Learning goal: Use this format —
+✅ "After completing this section, learners will be able to…"
+ • Then list 3–6 Lesson titles, e.g.:
+ • "Creating an Account"
+ • "Customizing Your Settings"
+ • "Using Templates"
+ • "Quiz: Getting Started"
+ • Each lesson should cover one focused idea, process, or decision point
+
+✅ About Subtopics
+Subtopics are optional.
+Only add Subtopics (3–5) if:
+ • The document is large and has distinct clusters of themes
+ • It logically improves the course flow and navigation
+If added, each subtopic must include:
+ • A learner-friendly description that answers: → "What will learners gain from this part of the course?"
+ • Then structure the chapters and lessons as usual within the subtopic
+
+📙 4. Conclusion Section (always included)
+This section helps close the learning loop and collect feedback.
+ • Section title: "Conclusion"
+ • Learning goal:
+✅ "After completing this section, learners will be able to reflect on their experience and share feedback."
+ • Lesson title: "Final Feedback"
+
+
+🧠 Structuring Logic:
+
+- Do NOT copy the source document's structure blindly.
+- Group and sequence information based on pedagogical logic:
+   → general → specific
+→ foundational → applied
+→ familiar → new
+- Merge or split content as needed to improve learning flow and clarity.
+- If the document lacks structure, create your own based on instructional principles.
+
+✏️ Style:
+- Be clear, practical, and aligned with a modern learner's needs
+- Avoid overly academic language
+- Focus on usability, not technicality
+
+### Strict Rules:
+ ⁃ Language: The lesson must be in English language. Do not translate or switch languages.
+ ⁃ Absolutely do NOT include any citations, references, metadata, or file markers.
+ ⁃ Do NOT reference the document, file, or user input in any way. The response must appear as if it was written independently.
+ ⁃ ❌ Never include auto-generated references like turn0file0, oaicite, source, file, or any similar metadata placeholders.
+ ⁃ ✅ You must remove all in-text reference markers or any hidden metadata that resemble citations.
+ ⁃ Always check that no phrase includes code-like patterns (e.g., file0, cite1, oaicite).
+ ⁃ Use only the information provided – No extra details, assumptions, or external knowledge.
+ ⁃ If content is in Hebrew, validate that letters are correct and not replaced by similar-looking characters. Ensure grammatical accuracy before extracting key concepts.
 
       Your output should be a complete and logical hierarchy that thoroughly covers the subject matter.
       ${state.context && state.context.length > 0 ? 
@@ -131,7 +199,7 @@ export async function generateTOC(state: EducationState): Promise<EducationState
   const tocChain = RunnableSequence.from([
     RunnablePassthrough.assign({
       // Explicitly preserve all state properties
-      topic: (state: any) => state.topic,
+      topic: (state: any) => state.topic || "",
       context: (state: any) => state.context || [],
       memory: (state: any) => state.memory || {},
       history: (state: any) => state.history ? state.history : [],
@@ -200,9 +268,18 @@ export async function generateTOC(state: EducationState): Promise<EducationState
   // Run the chain
   console.log("Before invoking tocChain - state context:", 
     state.context ? `${state.context.length} items` : "undefined");
-  const tocData = await tocChain.invoke(state);
-
-  console.log("TOC generation result:", JSON.stringify(tocData).substring(0, 200) + "...");
+  
+  let tocData;
+  try {
+    tocData = await tocChain.invoke(state);
+    console.log("TOC generation result:", JSON.stringify(tocData).substring(0, 200) + "...");
+  } catch (error: any) {
+    console.error("Error in TOC generation:", error);
+    return {
+      ...state,
+      error: `Failed to generate TOC: ${error.message}`,
+    };
+  }
   
   // Use Zod to validate and normalize the TOC data
   let normalizedTocData;

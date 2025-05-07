@@ -7,10 +7,27 @@ export const QuizQuestionSchema = z.object({
   correctAnswer: z.number(),
 });
 
-export const LessonSchema = z.object({
+export const MemoryCardSchema = z.object({
   title: z.string(),
-  content: z.string(),
-  quiz: z.array(QuizQuestionSchema),
+  description: z.string(),
+  situation: z.string().optional(),
+  response: z.string().optional(),
+});
+
+export const OpenEndedQuestionSchema = z.object({
+  title: z.string(),
+  description: z.string().optional(),
+});
+
+export const LessonSchema = z.object({
+  lessonInfo: z.object({
+    title: z.string(),
+    description: z.string(),
+  }),
+  memoryCards: z.array(MemoryCardSchema).optional(),
+  quizCards: z.array(QuizQuestionSchema).optional(),
+  openEndedQuestion: OpenEndedQuestionSchema.optional(),
+  openEndedQuestions: z.array(OpenEndedQuestionSchema).optional(),
 });
 
 // Updated schema with nested chapters

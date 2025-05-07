@@ -115,7 +115,7 @@ export async function POST(req: NextRequest) {
     console.log("Running education graph with topic:", 
       contentType === "topic" ? contentSource : "Document analysis");
     
-    // Инициализируем пустую историю сообщений и память
+    // Initialize empty history messages and memory
     const initialHistory: any[] = [];
     const initialMemory: Record<string, any> = {};
     
@@ -129,6 +129,13 @@ export async function POST(req: NextRequest) {
         } : { source: "direct input" }
       }];
 
+      // Log the input to the education graph for debugging
+      console.log("Education graph input:", JSON.stringify({
+        topic: contentType === "topic" ? contentSource : 
+          validatedPayload.pdfFileInfo?.name || "Document analysis",
+        contextLength: context.length,
+        contextSample: context.length > 0 ? context[0].pageContent.substring(0, 100) + "..." : "None"
+      }));
 
       const result = await graph.invoke({
         topic: contentType === "topic" ? contentSource : 
@@ -142,13 +149,18 @@ export async function POST(req: NextRequest) {
       console.log("Has generatedContent:", result.generatedContent ? "yes" : "no");
       
       if (!result.generatedContent) {
-        console.error("Generated content is missing from result:", result);
+        console.error("Generated content is missing from result:", 
+          result.error ? `Error: ${result.error}` : JSON.stringify(result, null, 2).substring(0, 500));
         if (result.error) {
           return NextResponse.json(
             { error: result.error },
             { status: 400 }
           );
         }
+        return NextResponse.json(
+          { error: "Failed to generate educational content. The response structure was invalid." },
+          { status: 500 }
+        );
       }
 
       // Store content in Supabase if configured and we have a document reference

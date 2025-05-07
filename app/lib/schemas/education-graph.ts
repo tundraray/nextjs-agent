@@ -81,15 +81,35 @@ export const AlternativeTocSchema = z.object({
 export const LessonContentSchema = z.object({
   lessons: z.array(
     z.object({
-      title: z.string(),
-      content: z.string(),
-      quiz: z.array(
+      lessonInfo: z.object({
+        title: z.string(),
+        description: z.string()
+      }),
+      memoryCards: z.array(
+        z.object({
+          title: z.string(),
+          description: z.string(),
+          situation: z.string().optional(),
+          response: z.string().optional()
+        })
+      ).optional(),
+      quizCards: z.array(
         z.object({
           question: z.string(),
           options: z.array(z.string()),
           correctAnswer: z.number().int()
         })
-      )
+      ).optional(),
+      openEndedQuestion: z.object({
+        title: z.string(),
+        description: z.string().optional()
+      }).optional(),
+      openEndedQuestions: z.array(
+        z.object({
+          title: z.string(),
+          description: z.string().optional()
+        })
+      ).optional()
     })
   )
 });

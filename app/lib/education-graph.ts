@@ -13,15 +13,17 @@ import { retrieveContext, generateTOC, generateChapterContent } from "./educatio
 export async function createEducationGraph() {
   // Return a simple runnable that processes the steps sequentially
   return {
-    invoke: async (input: EducationState | Record<string, any> | undefined) => {
+    invoke: async (input: Partial<EducationState> | Record<string, any> | undefined) => {
       console.log("Using sequential processing for education pipeline");
       
       // Get state from input or create a minimal viable state
-      const state = input || {
-        topic: "",
-        context: [],
-        memory: {},
-        history: []
+      // Ensure the state object conforms to EducationState interface
+      const state: EducationState = {
+        topic: input?.topic || "",
+        context: input?.context || [],
+        memory: input?.memory || {},
+        history: input?.history || [],
+        ...(input || {})
       };
       
       try {

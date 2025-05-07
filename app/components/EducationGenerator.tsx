@@ -9,10 +9,27 @@ interface QuizQuestion {
   correctAnswer: number;
 }
 
-interface Lesson {
+interface MemoryCard {
   title: string;
-  content: string;
-  quiz: QuizQuestion[];
+  description: string;
+  situation?: string;
+  response?: string;
+}
+
+interface OpenEndedQuestion {
+  title: string;
+  description?: string;
+}
+
+interface Lesson {
+  lessonInfo: {
+    title: string;
+    description: string;
+  };
+  memoryCards?: MemoryCard[];
+  quizCards?: QuizQuestion[];
+  openEndedQuestion?: OpenEndedQuestion;
+  openEndedQuestions?: OpenEndedQuestion[];
 }
 
 interface Chapter {
@@ -277,13 +294,25 @@ export default function EducationGenerator() {
                     
                     {chapter.lessons && chapter.lessons.map((lesson, lessonIndex) => (
                       <div key={lessonIndex} className="border-l-4 border-blue-500 pl-4 mb-4">
-                        <h5 className="font-bold mb-2">{lesson.title}</h5>
-                        <p className="mb-4 whitespace-pre-line">{lesson.content}</p>
+                        <h5 className="font-bold mb-2">{lesson.lessonInfo.title}</h5>
+                        <p className="mb-4 whitespace-pre-line">{lesson.lessonInfo.description}</p>
                         
-                        {lesson.quiz && lesson.quiz.length > 0 && (
+                        {lesson.memoryCards && lesson.memoryCards.length > 0 && (
+                          <div className="bg-gray-50 p-4 rounded">
+                            <h6 className="font-bold mb-2">Memory Cards</h6>
+                            {lesson.memoryCards.map((card, cardIndex) => (
+                              <div key={cardIndex} className="mb-4">
+                                <p className="font-medium mb-2">{card.title}</p>
+                                <p className="text-gray-600">{card.description}</p>
+                              </div>
+                            ))}
+                          </div>
+                        )}
+
+                        {lesson.quizCards && lesson.quizCards.length > 0 && (
                           <div className="bg-gray-50 p-4 rounded">
                             <h6 className="font-bold mb-2">Quiz</h6>
-                            {lesson.quiz.map((question, qIndex) => (
+                            {lesson.quizCards.map((question, qIndex) => (
                               <div key={qIndex} className="mb-4">
                                 <p className="font-medium mb-2">{question.question}</p>
                                 <div className="space-y-2">
@@ -298,6 +327,26 @@ export default function EducationGenerator() {
                                     </label>
                                   ))}
                                 </div>
+                              </div>
+                            ))}
+                          </div>
+                        )}
+
+                        {lesson.openEndedQuestion && (
+                          <div className="bg-gray-50 p-4 rounded">
+                            <h6 className="font-bold mb-2">Open-Ended Question</h6>
+                            <p className="font-medium mb-2">{lesson.openEndedQuestion.title}</p>
+                            <p className="text-gray-600">{lesson.openEndedQuestion.description}</p>
+                          </div>
+                        )}
+
+                        {lesson.openEndedQuestions && lesson.openEndedQuestions.length > 0 && (
+                          <div className="bg-gray-50 p-4 rounded">
+                            <h6 className="font-bold mb-2">Open-Ended Questions</h6>
+                            {lesson.openEndedQuestions.map((question, qIndex) => (
+                              <div key={qIndex} className="mb-4">
+                                <p className="font-medium mb-2">{question.title}</p>
+                                <p className="text-gray-600">{question.description}</p>
                               </div>
                             ))}
                           </div>
