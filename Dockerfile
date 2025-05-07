@@ -35,6 +35,24 @@ WORKDIR /app
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .
 
+RUN apt-get update && apt-get install -y --no-install-recommends \
+  build-essential \
+  python3 \
+  pkg-config \
+  libcairo2-dev \
+  libpango1.0-dev \
+  libjpeg-dev \
+  libgif-dev \
+  librsvg2-dev \
+  libpixman-1-dev \
+  libfreetype6-dev \
+  libpng-dev \
+  git \
+  && rm -rf /var/lib/apt/lists/*
+
+RUN corepack enable && \
+    corepack prepare yarn@3.5.1 --activate
+
 # Next.js collects completely anonymous telemetry data about general usage.
 # Learn more here: https://nextjs.org/telemetry
 # Uncomment the following line in case you want to disable telemetry during the build.
@@ -45,6 +63,21 @@ RUN yarn build
 # Production image, copy all the files and run next
 FROM base AS runner
 WORKDIR /app
+
+RUN apt-get update && apt-get install -y --no-install-recommends \
+  build-essential \
+  python3 \
+  pkg-config \
+  libcairo2-dev \
+  libpango1.0-dev \
+  libjpeg-dev \
+  libgif-dev \
+  librsvg2-dev \
+  libpixman-1-dev \
+  libfreetype6-dev \
+  libpng-dev \
+  git \
+  && rm -rf /var/lib/apt/lists/*
 
 ENV NODE_ENV=production
 # Uncomment the following line in case you want to disable telemetry during runtime.
