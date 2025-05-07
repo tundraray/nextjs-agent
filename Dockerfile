@@ -20,8 +20,6 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
   git \
   && rm -rf /var/lib/apt/lists/*
 
-RUN corepack enable && \
-    corepack prepare yarn@3.5.1 --activate
 WORKDIR /app
 
 # Install dependencies based on the preferred package manager
@@ -50,8 +48,6 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
   git \
   && rm -rf /var/lib/apt/lists/*
 
-RUN corepack enable && \
-    corepack prepare yarn@3.5.1 --activate
 
 # Next.js collects completely anonymous telemetry data about general usage.
 # Learn more here: https://nextjs.org/telemetry
