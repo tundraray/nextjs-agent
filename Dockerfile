@@ -26,13 +26,17 @@ WORKDIR /app
 
 # Install dependencies based on the preferred package manager
 COPY package.json yarn.lock .yarnrc.yml ./
-RUN yarn
+# Run yarn install to update the lockfile
+RUN yarn install --immutable
 
 
 # Rebuild the source code only when needed
 FROM base AS builder
 WORKDIR /app
 COPY --from=deps /app/node_modules ./node_modules
+COPY --from=deps /app/.yarn ./.yarn
+COPY --from=deps /app/.pnp.* ./
+COPY --from=deps /app/yarn.lock ./
 COPY . .
 
 RUN apt-get update && apt-get install -y --no-install-recommends \
@@ -67,6 +71,8 @@ ENV SUPABASE_SERVICE_ROLE_KEY=$SUPABASE_SERVICE_ROLE_KEY
 ENV NEXT_PUBLIC_SUPABASE_ANON_KEY=$NEXT_PUBLIC_SUPABASE_ANON_KEY
 ENV OPENAI_API_KEY=$OPENAI_API_KEY
 
+# Install @napi-rs/canvas explicitly to avoid issues
+RUN yarn add @napi-rs/canvas
 RUN yarn build
 
 # Production image, copy all the files and run next
