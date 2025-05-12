@@ -87,7 +87,7 @@ export async function generateTOC(state: EducationState): Promise<EducationState
   const tocPrompt = ChatPromptTemplate.fromMessages([
     {
       role: "system",
-      content: `🎓 Instructional Design Prompt: Generate Microlearning Course Structure from PDF or Text File
+      content: `🎓 Instructional Design Prompt: Generate Microlearning Course Structure
 You are an Instructional Designer and Curriculum Architect.
 Your task is to analyze the provided document (PDF extraction or raw text) and generate a clear, pedagogically sound microlearning course structure.
 
@@ -105,10 +105,11 @@ Your Output Must Follow This Structure:
  • How it is structured
 Use motivational, modern, easy-to-read language.
 
-2. Introduction
+2. Introduction (REQUIRED)
  • Lesson Title: What This Course Is About?
 A standalone lesson that introduces the topic, what the learner will gain, and how the course is structured.
 If the original document includes an introductory paragraph, motivation, or explanation of importance — include those points here as part of the learner-facing framing.
+THIS SECTION IS MANDATORY AND MUST BE INCLUDED IN EVERY COURSE STRUCTURE.
 
 3. Core Chapters
 Each chapter must include:
@@ -126,7 +127,7 @@ Only include a lesson when a learner can realistically understand, describe, or 
 (No descriptions.)
 
 🧠 Structuring Logic:
- • Do NOT copy the document’s structure blindly
+ • Do NOT copy the document's structure blindly
  • Do NOT invent outcomes the learner cannot achieve directly from the provided content
  • Organize content using instructional logic:
 → general → specific
@@ -137,7 +138,7 @@ Only include a lesson when a learner can realistically understand, describe, or 
 ✏️ Style Guide:
  • Use clear, practical, learner-focused language
  • Avoid academic or overly technical tone
- • Don’t include imagined use cases — focus on what’s actually in the document
+ • Don't include imagined use cases — focus on what's actually in the document
  • Lesson titles must be short and actionable
 
 🔍 Lesson Design Criteria:
@@ -146,7 +147,7 @@ Each lesson should be:
  • Framed around a realistic, standalone learning goal
  • Group related steps together when they support the same concept
  • Never split mechanically by every bullet or sentence
- • Never include outcomes like “analyze”, “evaluate”, or “choose” unless the document fully supports that level of depth
+ • Never include outcomes like "analyze", "evaluate", or "choose" unless the document fully supports that level of depth
 
 ❌ Strict No-Gos:
  ⁃ Language: The lesson must be in %s language. Do not translate or switch languages.
@@ -420,6 +421,15 @@ Each lesson should be:
       mainTopic: state.topic,
       description: `Educational content about ${state.topic}`,
       subTopics: [{
+        title: "Introduction",
+        description: `Introduction to ${state.topic}`,
+        chapters: [{
+          title: "What This Course Is About",
+          description: `Overview of ${state.topic}`,
+          lessons: ["What This Course Is About"]
+        }]
+      },
+      {
         title: `Understanding ${state.topic}`,
         description: `Learn about ${state.topic}`,
         chapters: [{
