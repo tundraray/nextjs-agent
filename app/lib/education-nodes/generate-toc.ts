@@ -30,7 +30,7 @@ const tocJsonSchema = {
     },
     subTopics: {
       type: "array",
-      description: "3-5 major subtopics that cover different aspects of the main topic",
+      description: "major chapters that cover different aspects of the main topic",
       items: {
         type: "object",
         properties: {
@@ -58,7 +58,7 @@ const tocJsonSchema = {
                 },
                 lessons: {
                   type: "array",
-                  description: "3-5 lesson titles per chapter",
+                  description: "lesson titles per chapter",
                   items: {
                     type: "string",
                     description: "Title of the lesson"
@@ -185,7 +185,6 @@ Each lesson should be:
     ? state.context
         .map((doc: { pageContent: string }) => doc.pageContent)
         .join("\n\n")
-        .substring(0, 10000)
     : "";
   
   console.log("Context length for TOC generation:", contextStr.length);
