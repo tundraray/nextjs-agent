@@ -7,6 +7,7 @@ import { SupabaseVectorStoreMemory } from "../supabase-memory";
 import { EducationState } from "../types/education";
 import { LessonContentSchema, AlternativeLessonContentSchema, TocSchema } from "../schemas/education-graph";
 import { searchVectorStore } from "../vector-store";
+import { zodToJsonSchema } from "zod-to-json-schema";
 
 // Initialize OpenAI chat model
 const model = new ChatOpenAI({
@@ -17,123 +18,8 @@ const model = new ChatOpenAI({
 // Initialize memory
 const memory = new SupabaseVectorStoreMemory();
 
-// Define JSON schema structure for lesson content
-const lessonContentJsonSchema = {
-  type: "object",
-  properties: {
-    lessons: {
-      type: "array",
-      description: "Array of lesson objects with their content structure",
-      items: {
-        type: "object",
-        properties: {
-          lessonInfo: {
-            type: "object",
-            description: "Basic information about the lesson",
-            properties: {
-              title: {
-                type: "string",
-                description: "Title of the lesson"
-              },
-              description: {
-                type: "string",
-                description: "Short learning goal sentence for the lesson"
-              }
-            },
-            required: ["title", "description"]
-          },
-          memoryCards: {
-            type: "array",
-            description: "Array of memory cards with key ideas from the lesson (5-15 cards)",
-            items: {
-              type: "object",
-              properties: {
-                title: {
-                  type: "string",
-                  description: "Title or key concept of the memory card"
-                },
-                description: {
-                  type: "string",
-                  description: "Content of the memory card with key takeaways"
-                },
-                // For scenario cards
-                situation: {
-                  type: "string",
-                  description: "Situation described in a scenario card (optional)"
-                },
-                response: {
-                  type: "string",
-                  description: "Model response for a scenario card (optional)"
-                }
-              },
-              required: ["title", "description"]
-            }
-          },
-          quizCards: {
-            type: "array",
-            description: "Multiple choice questions to test understanding (2-5 cards)",
-            items: {
-              type: "object",
-              properties: {
-                question: {
-                  type: "string",
-                  description: "Quiz question text"
-                },
-                options: {
-                  type: "array",
-                  description: "Array of 4 possible answer options (1 correct, 3 distractors)",
-                  items: {
-                    type: "string"
-                  }
-                },
-                correctAnswer: {
-                  type: "integer",
-                  description: "Index of the correct answer (0-3)"
-                }
-              },
-              required: ["question", "options", "correctAnswer"]
-            }
-          },
-          openEndedQuestion: {
-            type: "object",
-            description: "Open-ended feedback question for the lesson",
-            properties: {
-              title: {
-                type: "string",
-                description: "Question title"
-              },
-              description: {
-                type: "string",
-                description: "Details and options for the question"
-              }
-            },
-            required: ["title"]
-          },
-          openEndedQuestions: {
-            type: "array",
-            description: "Multiple open-ended questions (for conclusion lesson)",
-            items: {
-              type: "object",
-              properties: {
-                title: {
-                  type: "string",
-                  description: "Question title"
-                },
-                description: {
-                  type: "string",
-                  description: "Details and options for the question"
-                }
-              },
-              required: ["title"]
-            }
-          }
-        },
-        required: ["lessonInfo"]
-      }
-    }
-  },
-  required: ["lessons"]
-};
+// Convert the Zod schema to JSON schema for the LLM to use
+const lessonContentJsonSchema = zodToJsonSchema(LessonContentSchema);
 
 /**
  * Node function to generate content for each chapter
