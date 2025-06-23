@@ -54,7 +54,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 # Uncomment the following line in case you want to disable telemetry during the build.
 # ENV NEXT_TELEMETRY_DISABLED=1
 
-ARG NEXT_PUBLIC_SUPABASE_URLAdd commentMore actions
+ARG NEXT_PUBLIC_SUPABASE_URL
 ARG SUPABASE_SERVICE_ROLE_KEY
 ARG NEXT_PUBLIC_SUPABASE_ANON_KEY
 ARG OPENAI_API_KEY
