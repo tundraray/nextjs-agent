@@ -156,7 +156,7 @@ You must include cards answering:
 
 3. videoScript (title and description)
 
-4. quizCards: Quizzes must not be included in this introductory part.
+4. NO quizCards: Quizzes must not be included in this introductory part.
 
 
 Core Section Lessons
@@ -310,6 +310,8 @@ This lesson must clearly and engagingly explain:
 * ✅ How the course is structured
 
 ### **Required Structure:**
+
+### NO quizCards: Quizzes must not be included in this introductory part.
 
 ### **1\. \`lessonInfo\`**
 
