@@ -8,62 +8,9 @@ import { EducationContentSchema } from "@/lib/schemas/education";
 
 // Function to clean up and fix data structure issues in generated content
 function cleanGeneratedContent(content: any) {
-  if (!content) return content;
-  
-  try {
-    // Make a deep copy of the content to avoid mutation issues
-    const cleanedContent = JSON.parse(JSON.stringify(content));
-    
-    // Process subtopics
-    if (cleanedContent.subTopics && Array.isArray(cleanedContent.subTopics)) {
-      cleanedContent.subTopics.forEach((subtopic: any) => {
-        // Process chapters
-        if (subtopic.chapters && Array.isArray(subtopic.chapters)) {
-          subtopic.chapters.forEach((chapter: any) => {
-            // Process lessons
-            if (chapter.lessons && Array.isArray(chapter.lessons)) {
-              chapter.lessons.forEach((lesson: any) => {
-                // Fix memory cards
-                if (lesson.memoryCards && Array.isArray(lesson.memoryCards)) {
-                  // Filter out memory cards with missing required fields
-                  lesson.memoryCards = lesson.memoryCards
-                    .filter((card: any) => {
-                      // Keep only cards with both title and description
-                      return card && typeof card === 'object' && 
-                             card.title && typeof card.title === 'string' &&
-                             card.description && typeof card.description === 'string';
-                    });
-                }
-                
-                // Fix quiz cards
-                if (lesson.quizCards && Array.isArray(lesson.quizCards)) {
-                  // Filter out quiz cards with missing required fields
-                  lesson.quizCards = lesson.quizCards
-                    .filter((card: any) => {
-                      return card && typeof card === 'object' && 
-                             card.question && typeof card.question === 'string' &&
-                             card.options && Array.isArray(card.options) &&
-                             typeof card.correctAnswer === 'number';
-                    });
-                }
-              });
-            }
-          });
-        }
-      });
-    }
-    
-    return cleanedContent;
-  } catch (error) {
-    console.error("Error cleaning generated content:", error);
-    return content; // Return original content if cleaning fails
-  }
+  return content;
 }
 
-// Initialize OpenAI client
-const openai = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY,
-});
 
 // Payload schema for request validation
 const PayloadSchema = z.object({

@@ -85,6 +85,10 @@ export const LessonContentSchema = z.object({
         title: z.string(),
         description: z.string()
       }),
+      videoScript: z.object({
+        title: z.string(),
+        description: z.string()
+      }),
       memoryCards: z.array(
         z.object({
           title: z.string(),

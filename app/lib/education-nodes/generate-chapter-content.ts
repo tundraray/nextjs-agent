@@ -126,6 +126,12 @@ export async function generateChapterContent(state: EducationState): Promise<Edu
             role: "system",
             content: `Introduction lesson
 
+you are creating training courses for the Jewish community of Chabad, according to which educational microlearning courses will be created, with the analysis of spiritual texts, thoughts of rabbis and teach millions of Jews spirituality and the meanings of the Torah.
+
+keep the context the same as the sages write, discussing the Talmud, Torah, and other sacred books of the Jewish people
+
+your task: to teach Jews interested in the Torah complex things in simple words, so that they find it interesting and understandable for perception            
+
 You are an instructional designer creating the Introduction section of a microlearning course based on the course outline or a provided topic.
 Your task is to generate 1 introductory lesson titled "What This Course Is About" that clearly explains:
  • What the course is about
@@ -147,6 +153,11 @@ You must include cards answering:
  • What topics will be covered
  • What results/skills the learner will get
  • How the course is structured
+
+3. videoScript (title and description)
+
+4. quizCards: Quizzes must not be included in this introductory part.
+
 
 Core Section Lessons
 You are creating microlearning-style lessons for a structured course section.
@@ -602,6 +613,7 @@ Its only purpose is to thank the learner and collect feedback about the learning
             
             Respond with a valid JSON object containing an array of lessons, each with:
             1. lessonInfo (title and description)
+            2. videoScript (title and description)
             2. memoryCards (array of cards with title, description and optional situation/response fields)
             3. quizCards (array of multiple choice questions with options and correctAnswer index)
             4. openEndedQuestion (feedback question with title and description)
@@ -746,6 +758,10 @@ Its only purpose is to thank the learner and collect feedback about the learning
                     lessonInfo: {
                       title: title,
                       description: content.substring(0, 100) + '...' // Create a brief description from content
+                    },
+                    videoScript: {
+                      title: lesson.videoScript.title || '',
+                      description: lesson.videoScript.description || ''
                     },
                     memoryCards: [
                       {

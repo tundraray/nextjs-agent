@@ -26,6 +26,10 @@ interface Lesson {
     title: string;
     description: string;
   };
+  videoScript: {
+    title: string;
+    description: string;
+  };
   memoryCards?: MemoryCard[];
   quizCards?: QuizQuestion[];
   openEndedQuestion?: OpenEndedQuestion;
@@ -307,6 +311,14 @@ export default function EducationGenerator() {
                         <h5 className="font-bold mb-2">{lesson.lessonInfo.title}</h5>
                         <p className="mb-4 whitespace-pre-line">{lesson.lessonInfo.description}</p>
                         
+                        {lesson.videoScript && (
+                          <div className="bg-gray-50 p-4 rounded">
+                            <h6 className="font-bold mb-2">Video Script</h6>
+                            <p className="text-gray-600">{lesson.videoScript.title}</p>
+                            <p className="text-gray-600">{lesson.videoScript.description}</p>
+                          </div>
+                        )}
+
                         {lesson.memoryCards && lesson.memoryCards.length > 0 && (
                           <div className="bg-gray-50 p-4 rounded">
                             <h6 className="font-bold mb-2">Memory Cards</h6>
